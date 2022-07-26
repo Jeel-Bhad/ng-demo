@@ -7,4 +7,4 @@ export const reset=createAction('reset');
 export const customIncrement=createAction('customincrement',
 props<{count:number}>());
 
-export const changeChannelName=createAction('changeChannelName');
+export const changeText=createAction('changeText');
