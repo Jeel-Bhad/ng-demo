@@ -1,32 +1,20 @@
 import { createReducer, on } from "@ngrx/store";
-import { initialState } from "src/app/posts/posts-list/state/posts.state";
-import { addPost, deletePost, updatePost } from "./posts.actions";
+import { initialState, postsAdapter } from "src/app/posts/posts-list/state/posts.state";
+import { addPost, addPostSuccess, deletePost, loadPostsSuccess, updatePost, updatePostSuccess } from "./posts.actions";
 
+
+//converting reducer to entity adapter
 const _postsReducer=createReducer(initialState,
-    on(addPost,(state,action)=>{
-    let post ={...action.post};
-    post.id=(state.posts.length+1).toString();
-
-    return{
-        ...state,
-        posts:[...state.posts,post],
-    };
-}),on(updatePost,(state,action)=>{
-    const updatePosts=state.posts.map(post=>{
-        return action.post.id===post.id?action.post:post;
-    });
-    return {
-        ...state,
-        posts:updatePosts,
-    };
+    on(addPostSuccess,(state,action)=>{
+        return postsAdapter.addOne(action.post,{...state,
+        count:state.count+1,});
+}),on(updatePostSuccess,(state,action)=>{
+   return postsAdapter .updateOne(action.post,state);
 }),on(deletePost,(state,{id})=>{
-    const updatedPosts=state.posts.filter(post=>{
-        return post.id!==id;
-    });
-    return {
-        ...state,
-        posts:updatedPosts,
-    };
+    return postsAdapter.removeOne(id,state);
+}),on(loadPostsSuccess , (state,action)=>{
+    return postsAdapter.setAll(action.posts,{...state,
+        count:state.count+1,});
 })
 );  
 
